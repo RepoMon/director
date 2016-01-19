@@ -1,5 +1,6 @@
 var Config = require('./config'),
-    logger = require('./logger');
+    logger = require('./logger'),
+    request = require('request');
 
 
 /**
@@ -18,9 +19,9 @@ module.exports.handle = function(sub, pub, event) {
     if (event.name == 'repo-mon.update.scheduled') {
 
         // get repository data
-        var repo_uri = config.getRepositoryService() + '/repositories/' + event.data.full_name;
+        var repo_uri = Config.getRepositoryService() + '/repositories/' + event.data.full_name;
 
-        request(uri, function(err, response, body){
+        request(repo_uri, function(err, response, body){
 
             if (!err) {
 
@@ -29,7 +30,7 @@ module.exports.handle = function(sub, pub, event) {
                 // check if repository is active and we support it
                 if ('1' == repository.active) {
 
-                    var token_uri =  config.getTokenService() + '/tokens/' + repository.owner;
+                    var token_uri =  Config.getTokenService() + '/tokens/' + repository.owner;
 
                     request(token_uri, function (err, response, body) {
 
