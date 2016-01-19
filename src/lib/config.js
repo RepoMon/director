@@ -17,9 +17,22 @@ module.exports.getQueueContext = function() {
 };
 
 /**
- *
  * @returns {string}
  */
 module.exports.getQueueName = function () {
     return 'repo-mon.main';
+};
+
+/**
+ * @returns {string}
+ */
+module.exports.getRepositoryService = function () {
+    return 'http://repository';
+};
+
+/**
+ * @returns {string}
+ */
+module.exports.getTokenService = function () {
+    return 'http://token';
 };

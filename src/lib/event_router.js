@@ -17,8 +17,45 @@ module.exports.handle = function(sub, pub, event) {
 
     if (event.name == 'repo-mon.update.scheduled') {
 
-        // use async to fire off two requests in parallel and collect the responses
-        
+        // get repository data
+        var repo_uri = config.getRepositoryService() + '/repositories/' + event.data.full_name;
+
+        request(uri, function(err, response, body){
+
+            if (!err) {
+
+                repository = JSON.parse(body);
+
+                // check if repository is active and we support it
+                if ('1' == repository.active) {
+
+                    var token_uri =  config.getTokenService() + '/tokens/' + repository.owner;
+
+                    request(token_uri, function (err, response, body) {
+
+                        if (!err) {
+
+                            // publish an update command
+                            pub.write(JSON.stringify( {
+                                name: 'command.repository.update',
+                                data: {
+                                    url : repository.url,
+                                    token : body,
+                                    language : repository.lang,
+                                    dependency_manager : repository.dependency_manager
+                                }
+                            }));
+
+                        } else {
+                            logger.info("Error from " + token_uri + ' ' + err);
+                        }
+                    });
+                }
+            } else {
+                logger.info("Error from " + repo_uri + ' ' + err);
+            }
+        });
+
         // get token from token service
         // get repository data from repository service
 
@@ -29,5 +66,4 @@ module.exports.handle = function(sub, pub, event) {
             }
         }));
     }
-
 };
