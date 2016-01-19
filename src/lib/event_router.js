@@ -2,8 +2,6 @@ var Config = require('./config'),
     logger = require('./logger');
 
 
-var index = 0;
-
 /**
  * Handle update scheduled events by publishing events for update services
  *
@@ -19,13 +17,15 @@ module.exports.handle = function(sub, pub, event) {
 
     if (event.name == 'repo-mon.update.scheduled') {
 
+        // use async to fire off two requests in parallel and collect the responses
+        
         // get token from token service
         // get repository data from repository service
 
         pub.write(JSON.stringify({
             name: 'repo-mon.event.reported',
             data: {
-                index: index++
+                time: Math.floor(Date.now() / 1000)
             }
         }));
     }
