@@ -43,8 +43,10 @@ module.exports.handle = function(sub, pub, event) {
                                     url : repository.url,
                                     token : body,
                                     language : repository.lang,
-                                    dependency_manager : repository.dependency_manager
-                                }
+                                    dependency_manager : repository.dependency_manager,
+                                    full_name: event.data.full_name
+                                },
+                                version: '1.0.0'
                             }));
 
                         } else {
@@ -64,7 +66,8 @@ module.exports.handle = function(sub, pub, event) {
             name: 'repo-mon.event.reported',
             data: {
                 time: Math.floor(Date.now() / 1000)
-            }
+            },
+            version: '1.0.0'
         }));
     }
 };
