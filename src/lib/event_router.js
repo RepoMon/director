@@ -44,7 +44,8 @@ module.exports.handle = function(sub, pub, event) {
                                     token : body,
                                     language : repository.lang,
                                     dependency_manager : repository.dependency_manager,
-                                    full_name: event.data.full_name
+                                    full_name: event.data.full_name,
+                                    branch: repository.branch
                                 },
                                 version: '1.0.0'
                             }));
