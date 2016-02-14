@@ -12,7 +12,7 @@ var Config = require('./config'),
  */
 module.exports.handle = function(sub, pub, event) {
 
-    logger.info('Handled event: ' + JSON.stringify(event));
+    logger.info('Received event: ' + JSON.stringify(event));
 
     // act on events named 'repo-mon.update.scheduled'
 
@@ -21,9 +21,11 @@ module.exports.handle = function(sub, pub, event) {
         // get repository data
         var repo_uri = Config.getRepositoryService() + '/repositories/' + event.data.full_name;
 
-        request(repo_uri, function(err, response, body){
+        request(repo_uri, function(repo_err, response, body){
 
-            if (!err) {
+            if (!repo_err) {
+
+                logger.info('Repository response body: ' + body);
 
                 repository = JSON.parse(body);
 
@@ -32,9 +34,9 @@ module.exports.handle = function(sub, pub, event) {
 
                     var token_uri =  Config.getTokenService() + '/tokens/' + repository.owner;
 
-                    request(token_uri, function (err, response, body) {
+                    request(token_uri, function (token_err, response, body) {
 
-                        if (!err) {
+                        if (!token_err) {
 
                             // publish an update command
                             pub.write(JSON.stringify( {
@@ -51,12 +53,12 @@ module.exports.handle = function(sub, pub, event) {
                             }));
 
                         } else {
-                            logger.info("Error from " + token_uri + ' ' + err);
+                            logger.info("Error from " + token_uri + ' ' + token_err);
                         }
                     });
                 }
             } else {
-                logger.info("Error from " + repo_uri + ' ' + err);
+                logger.info("Error from " + repo_uri + ' ' + repo_err);
             }
         });
 
